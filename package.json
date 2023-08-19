@@ -4,6 +4,8 @@
   "description": "A multi-user blog api",
   "main": "app.js",
   "scripts": {
+    "dev": "node --watch app.js",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Sanusi Yunusa",
