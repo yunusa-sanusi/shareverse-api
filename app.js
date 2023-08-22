@@ -4,8 +4,10 @@ const express = require('express');
 
 const connectDB = require('./db/connectDB');
 const authRouter = require('./routes/auth');
+const userRouter = require('./routes/users');
 const errorHandlerMiddleware = require('./middlewares/error-handler');
 const notFoundMiddleware = require('./middlewares/not-found');
+const isAuthenticatedMiddleware = require('./middlewares/isAuthenticated');
 
 const app = express();
 app.use(express.json());
@@ -15,6 +17,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/user', isAuthenticatedMiddleware, userRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

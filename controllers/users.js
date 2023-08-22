@@ -1,13 +1,15 @@
+const { StatusCodes } = require('http-status-codes');
+
 const dashboard = (req, res) => {
-  res.send('dashboard');
+  res.status(StatusCodes.OK).json({ page: 'dashboard', user: req.user });
 };
 
-const editProfile = (req, res) => {
-  res.send('edit profile');
+const updateUser = (req, res) => {
+  res.status(StatusCodes.OK).json({ page: 'update user', user: req.user });
 };
 
-const deleteProfile = (req, res) => {
-  res.send('delete profile');
+const deleteUser = (req, res) => {
+  res.status(StatusCodes.OK).json({ page: 'delete user', user: req.user });
 };
 
-module.exports = { dashboard, editProfile, deleteProfile };
+module.exports = { dashboard, updateUser, deleteUser };

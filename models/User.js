@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const UserProfile = require('./UserProfile');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -42,6 +43,9 @@ UserSchema.pre('save', async function () {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(this.password, salt);
   this.password = hashedPassword;
+
+  // create a user profile after user is create
+  await UserProfile.create({ userId: this._id });
 });
 
 UserSchema.methods.createJWT = function () {
