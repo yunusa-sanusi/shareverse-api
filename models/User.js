@@ -61,4 +61,8 @@ UserSchema.methods.comparePasswords = async function (candidatePassword) {
   return isMatch;
 };
 
+UserSchema.methods.cascadeDeleteUserProfile = async function () {
+  await UserProfile.findOneAndDelete({ userId: this._id });
+};
+
 module.exports = mongoose.model('User', UserSchema);
