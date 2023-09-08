@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const UserProfile = require('./UserProfile');
+const Post = require('./Post');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -48,6 +49,16 @@ UserSchema.pre('save', async function () {
   await UserProfile.create({ userId: this._id });
 });
 
+UserSchema.pre(
+  'deleteOne',
+  { document: false, query: true },
+  async function () {
+    // deletes user profile and posts
+    await UserProfile.deleteOne({ userId: this._conditions._id });
+    await Post.deleteMany({ author: this._conditions.username });
+  },
+);
+
 UserSchema.methods.createJWT = function () {
   return jwt.sign(
     { userId: this._id, username: this.username },
@@ -59,10 +70,6 @@ UserSchema.methods.createJWT = function () {
 UserSchema.methods.comparePasswords = async function (candidatePassword) {
   const isMatch = await bcrypt.compare(candidatePassword, this.password);
   return isMatch;
-};
-
-UserSchema.methods.cascadeDeleteUserProfile = async function () {
-  await UserProfile.findOneAndDelete({ userId: this._id });
 };
 
 module.exports = mongoose.model('User', UserSchema);

@@ -5,9 +5,7 @@ const isAuthenticatedMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer')) {
-    throw new UnauthenticatedError(
-      'Please login to your account to access the page',
-    );
+    throw new UnauthenticatedError('Please login to your account');
   }
 
   const token = authHeader.split(' ')[1];
@@ -18,7 +16,7 @@ const isAuthenticatedMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     throw new UnauthenticatedError(
-      'Could not authentication you. Please login to your account',
+      'Could not authenticate you. Please login to your account',
     );
   }
 };

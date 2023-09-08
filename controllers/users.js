@@ -65,7 +65,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const usernameParams = req.params.username;
 
-  const user = await User.findOneAndRemove({
+  const user = await User.deleteOne({
     _id: req.user.userId,
     username: usernameParams,
   });
@@ -76,9 +76,9 @@ const deleteUser = async (req, res) => {
     );
   }
 
-  await user.cascadeDeleteUserProfile();
-
-  res.status(StatusCodes.OK).json({ success: true, user });
+  res
+    .status(StatusCodes.OK)
+    .json({ success: true, message: 'Account was deleted successfully' });
 };
 
 module.exports = { dashboard, updateUser, deleteUser };
