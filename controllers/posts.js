@@ -1,13 +1,22 @@
 const { StatusCodes } = require('http-status-codes');
 const slugify = require('slugify');
+
 const capitalizeTitle = require('../utils/capitalizeTitle');
 
-const Post = require('../models/Post');
-const { NotFoundError, UnauthenticatedError } = require('../errors');
+const { Post } = require('../models');
+const { NotFoundError } = require('../errors');
 
 const getAllPosts = async (req, res) => {
-  const posts = await Post.find();
-  res.status(StatusCodes.OK).json({ posts });
+  const result = Post.find().sort('-createdAt');
+
+  // pagination
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 20;
+  const skip = (page - 1) * limit;
+
+  const posts = await result.skip(skip).limit(limit);
+
+  res.status(StatusCodes.OK).json({ length: posts.length, posts });
 };
 
 const getSinglePost = async (req, res) => {
