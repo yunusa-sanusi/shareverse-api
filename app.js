@@ -1,6 +1,9 @@
 require('dotenv').config();
 require('express-async-errors');
+
 const express = require('express');
+const fileUpload = require('express-fileupload');
+const cloudinary = require('cloudinary').v2;
 
 const connectDB = require('./db/connectDB');
 const authRouter = require('./routes/auth');
@@ -10,19 +13,34 @@ const errorHandlerMiddleware = require('./middlewares/error-handler');
 const notFoundMiddleware = require('./middlewares/not-found');
 const isAuthenticatedMiddleware = require('./middlewares/isAuthenticated');
 const { getAllPosts, getSinglePost } = require('./controllers/posts');
+const upload = require('./controllers/upload');
 
 const app = express();
 app.use(express.json());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+  }),
+);
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 app.get('/', (req, res) => {
   res.send('app is working');
 });
+
 app.get('/api/v1/posts', getAllPosts);
 app.get('/api/v1/posts/:slug', getSinglePost);
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', isAuthenticatedMiddleware, userRouter);
 app.use('/api/v1/posts', isAuthenticatedMiddleware, postRouter);
+
+app.post('/api/v1/upload', upload);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

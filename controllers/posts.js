@@ -5,6 +5,7 @@ const capitalizeTitle = require('../utils/capitalizeTitle');
 
 const { Post } = require('../models');
 const { NotFoundError } = require('../errors');
+const uploadImageToCloudinary = require('../utils/cloudinaryUpload');
 
 const getAllPosts = async (req, res) => {
   const result = Post.find().sort('-createdAt');
@@ -32,6 +33,14 @@ const createPost = async (req, res) => {
     ...req.body,
     author: req.user.username,
   };
+
+  const postImage = uploadImageToCloudinary(
+    req.body.postImage,
+    slugify(req.body.title),
+    'post-images',
+  );
+  req.body.postImage = postImage;
+
   const post = await Post.create({ ...postData });
   res.status(StatusCodes.CREATED).json({ success: true, post });
 };
